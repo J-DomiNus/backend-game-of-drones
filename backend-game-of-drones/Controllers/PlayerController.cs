@@ -67,8 +67,22 @@ namespace backend_game_of_drones.Controllers
 
         // PUT api/<PlayerController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(int id, [FromBody] Player player)
         {
+            try
+            {
+                if (id != player.Id)
+                {
+                    return NotFound();
+                }
+                _context.Update(player);
+                await _context.SaveChangesAsync();
+                return Ok(player);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<PlayerController>/5
