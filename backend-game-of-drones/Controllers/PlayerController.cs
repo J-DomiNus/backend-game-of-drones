@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend_game_of_drones.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,11 +10,25 @@ namespace backend_game_of_drones.Controllers
     [ApiController]
     public class PlayerController : ControllerBase
     {
+        private readonly AplicationDbContext _context;
+
+        public PlayerController(AplicationDbContext context)
+        {
+            _context = context;
+        }
         // GET: api/<PlayerController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var players = await _context.Player.ToListAsync();
+                return Ok(players);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET api/<PlayerController>/5
@@ -23,9 +39,30 @@ namespace backend_game_of_drones.Controllers
         }
 
         // POST api/<PlayerController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{name}")]
+
+        public async Task<IActionResult> Post(string name, [FromBody] Player player)
         {
+            try
+            {
+                var playerInDb = await _context.Player.SingleOrDefaultAsync(x => x.Name == name);
+                if (playerInDb is null)
+                {
+                    _context.Add(player);
+                    await _context.SaveChangesAsync();
+                    return Ok(player);
+                    
+                }else
+                {
+                    return Ok(playerInDb);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         // PUT api/<PlayerController>/5

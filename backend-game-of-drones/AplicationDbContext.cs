@@ -5,7 +5,7 @@ namespace backend_game_of_drones
 {
     public class AplicationDbContext: DbContext
     {
-        DbSet<Player> Player { get; set; }
+        public DbSet<Player> Player { get; set; }
         public AplicationDbContext(DbContextOptions<AplicationDbContext> options) : base(options) 
         {
         }
