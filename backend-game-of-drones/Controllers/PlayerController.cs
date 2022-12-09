@@ -23,7 +23,8 @@ namespace backend_game_of_drones.Controllers
             try
             {
                 var players = await _context.Player.ToListAsync();
-                return Ok(players);
+                var orderedList = players.OrderByDescending(player => player.Wins);
+                return Ok(orderedList);
             }
             catch (Exception ex)
             {
